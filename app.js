@@ -1,7 +1,7 @@
 // PRO TIP: To quickly navigate to a function, right click on its name and select "Go to Definition"
 
 function app(people) {
-	debugger;
+	//debugger;
 	displayWelcome();
 	runSearchAndMenu(people);
 	return exitOrRestart(people);
@@ -80,12 +80,12 @@ function mainMenu(person, people) {
 	switch (mainMenuUserActionChoice) {
 		case 'info':
 			//! TODO
-			displayPersonInfo(person);
+			displayPersonInfo(person, people);
 			break;
 		case 'family':
 			//! TODO
-			// let personFamily = findPersonFamily(person, people);
-			// displayPeople('Family', personFamily);
+			let personFamily = findPersonFamily(person, people);
+			displayPeople('Family', personFamily);
 			break;
 		case 'descendants':
 			//! TODO
@@ -101,14 +101,57 @@ function mainMenu(person, people) {
 	return mainMenu(person, people);
 }
 
-function displayPersonInfo(person){
-	alert(person)
+function findPersonFamily(person, people){
+	let family = [];
+	parents = relativesSearch(person.parents, people);
+	family.push(parents)
+	let spouseId = [person.currentSpouse]
+	spouse = relativesSearch(spouseId, people)
+	family.push(spouse)
+	let siblingsIds = findSiblings(person, people);
+	siblings = relativesSearch(siblingsIds, people);
+	family.push(siblings)
+	return family;
+}
+
+function relativesSearch(relatives, people){
+	let relativesProfiles = people.filter((relative) => relatives.includes(relative.id));
+	return relativesProfiles;
+}
+
+function findSiblings(person, people){
+	let parentsIds = person.parents;
+	let siblings = people.filter((person) => parentsIds.includes(person.id));
+	let siblingsIds = siblings.map((sibling) => sibling.id);
+	return siblingsIds;
+}
+
+function getFullNames(people){
+	let names = []
+	for(person of people){
+		if(person != undefined){
+			names.push(`${person.firstName} ${person.lastName}`)
+		}
+	}
+	return names;
+}
+
+function displayPersonInfo(person, people){
+	parents = relativesSearch(person.parents, people)
+	let parentsNames = getFullNames(parents)
+	let spouseId = [person.currentSpouse]
+	spouse = relativesSearch(spouseId, people)
+	let spouseName = getFullNames(spouse)
+	alert(`Name: ${person.firstName} ${person.lastName}\nGender: ${person.gender}\nDob: ${person.dob}\nHeight: ${person.height}\nWeight: ${person.weight}\nEye color: ${person.eyeColor}\nOccupation: ${person.occupation}\nParents: ${parentsNames}\nCurrent spouse: ${spouseName}`)
 }
 
 function displayPeople(displayTitle, peopleToDisplay) {
 	const formatedPeopleDisplayText = peopleToDisplay
-		.map((person) => `${person.firstName} ${person.lastName}`)
-		.join('\n');
+		.map(function(person){
+			if(person != undefined){
+				return `${person.firstName} ${person.lastName}`
+			}
+		}).join('\n');
 	alert(`${displayTitle}\n\n${formatedPeopleDisplayText}`);
 }
 
