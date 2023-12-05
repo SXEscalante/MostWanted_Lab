@@ -40,12 +40,51 @@ function searchPeopleDataSet(people) {
 			break;
 		case 'trait':
 			//! TODO
-			// results = searchByTraits(people);
+			results = searchByTraits(people);
 			break;
 		default:
 			return searchPeopleDataSet(people);
 	}
 
+	return results;
+}
+
+function searchByTraits(people){
+	const searchTraitChoice = validatedPrompt(
+		"Please enter the trait you would like to search for", 
+		['gender', 'dob', 'height', 'weight', 'eyecolor', 'occupation']
+	);
+	
+	let results = [];
+	let trait;
+	switch (searchTraitChoice) {
+		case 'gender':
+			trait = prompt("What gender is the person you are searching for")
+			results = people.filter((person) => person.gender === trait)
+			break;
+		case 'dob':
+			trait = prompt("What is the Date of Birth of the person you are searching for")
+			results = people.filter((person) => person.dob === trait)
+			break;
+		case 'height':
+			trait = prompt("What height is the person you are searching for")
+			results = people.filter((person) => person.height === trait)
+			break;
+		case 'weight':
+			trait = prompt("What weight is the person you are searching for")
+			results = people.filter((person) => person.weight === trait)
+			break;
+		case 'eyecolor':
+			trait = prompt("What is the eye color of the person you are searching for")
+			results = people.filter((person) => person.eyeColor === trait)
+			break;
+		case 'occupation':
+			trait = prompt("What occupation is the person you are searching for")
+			results = people.filter((person) => person.occupation === trait)
+			break;
+		case 'search':
+			break;
+	}
 	return results;
 }
 
@@ -104,13 +143,19 @@ function mainMenu(person, people) {
 function findPersonFamily(person, people){
 	let family = [];
 	parents = relativesSearch(person.parents, people);
-	family.push(parents)
+	for(parent of parents){
+		family.push(parent)
+	}
 	let spouseId = [person.currentSpouse]
-	spouse = relativesSearch(spouseId, people)
-	family.push(spouse)
+	let siblings = relativesSearch(spouseId, people)
+	for(sibling of siblings){
+		family.push(sibling)
+	}
 	let siblingsIds = findSiblings(person, people);
 	siblings = relativesSearch(siblingsIds, people);
-	family.push(siblings)
+	for(sibling of siblings){
+		family.push(sibling)
+	}
 	return family;
 }
 
@@ -121,7 +166,11 @@ function relativesSearch(relatives, people){
 
 function findSiblings(person, people){
 	let parentsIds = person.parents;
-	let siblings = people.filter((person) => parentsIds.includes(person.id));
+	let siblings = people.filter(function(sibling){
+		if(person.parents === sibling.parents){
+			return true;
+		}
+	});
 	let siblingsIds = siblings.map((sibling) => sibling.id);
 	return siblingsIds;
 }
@@ -148,10 +197,12 @@ function displayPersonInfo(person, people){
 function displayPeople(displayTitle, peopleToDisplay) {
 	const formatedPeopleDisplayText = peopleToDisplay
 		.map(function(person){
-			if(person != undefined){
+			if(person != null || undefined){
 				return `${person.firstName} ${person.lastName}`
 			}
-		}).join('\n');
+			
+		})
+		.join('\n');
 	alert(`${displayTitle}\n\n${formatedPeopleDisplayText}`);
 }
 
