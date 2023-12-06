@@ -90,12 +90,12 @@ function mainMenu(person, people) {
 			//! TODO
 			let personFamily = findPersonFamily(person, people);
 			if(personFamily.length == 0) alert(`${person.firstName} ${person.lastName} has no immediate family`);
-			else displayPeople('Family', personFamily);
+			else displayPeople('Family', personFamily, true);
 			break;
 		case 'descendants':
 			//! TODO
 			//let personDescendants = findPersonDescendants(person, people);
-			//else displayPeople('Descendants', personDescendants);
+			//else displayPeople('Descendants', personDescendants, true);
 			break;
 		case 'quit':
 			return;
@@ -110,16 +110,19 @@ function findPersonFamily(person, people){
 	let family = [];
 	parents = relativesSearch(person.parents, people);
 	for(parent of parents){
+		parent.relation = "Parent"
 		family.push(parent)
 	}
 	let spouseId = [person.currentSpouse]
 	let spouse = relativesSearch(spouseId, people)
 	for(partner of spouse){
+		partner.relation = "Spouse"
 		family.push(partner)
 	}
 	let siblingsIds = findSiblings(person, people);
 	siblings = relativesSearch(siblingsIds, people);
 	for(sibling of siblings){
+		sibling.relation = "Sibling"
 		family.push(sibling)
 	}
 	return family;
@@ -168,10 +171,13 @@ function displayPersonInfo(person, people){
 	alert(`Name: ${person.firstName} ${person.lastName}\nGender: ${person.gender}\nDob: ${person.dob}\nHeight: ${person.height}\nWeight: ${person.weight}\nEye color: ${person.eyeColor}\nOccupation: ${person.occupation}\nParents: ${parentsNames}\nCurrent spouse: ${spouseName}`)
 }
 
-function displayPeople(displayTitle, peopleToDisplay) {
+function displayPeople(displayTitle, peopleToDisplay, displayRelation) {
 	const formatedPeopleDisplayText = peopleToDisplay
 		.map(function(person){
-			if(person != null || undefined){
+			if((person != null || undefined) && displayRelation){
+				return `${person.relation}: ${person.firstName} ${person.lastName}`
+			}
+			else if(person != null || undefined){
 				return `${person.firstName} ${person.lastName}`
 			}
 		})
