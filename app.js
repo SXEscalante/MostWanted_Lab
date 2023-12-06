@@ -51,10 +51,14 @@ function searchPeopleDataSet(people) {
 }
 
 function searchByTraits(people, traitChoices){
+	if(people.length <= 1){
+		return people;
+	}
 	const searchTraitChoice = validatedPrompt(
 		`Please enter the trait you would like to search for\nThere are currently ${people.length} results`, 
 		traitChoices
 	);
+	
 	let traits;
 	switch (searchTraitChoice) {
 		case 'gender':
