@@ -56,10 +56,9 @@ function searchByTraits(people, traitChoices){
 		traitChoices
 	);
 	let traits;
-
 	switch (searchTraitChoice) {
 		case 'gender':
-			trait = prompt("What gender is the person you are searching for")
+			trait = validatedPrompt("What gender is the person you are searching for", ["male", "female"])
 			traits = removeTrait(traitChoices, 'gender')
 			results = people.filter((person) => person.gender === trait)
 			results = searchByTraits(results, traits)
@@ -83,7 +82,7 @@ function searchByTraits(people, traitChoices){
 			results = searchByTraits(results, traits)
 			break;
 		case 'eyecolor':
-			trait = prompt("What is the eye color of the person you are searching for")
+			trait = validatedPrompt("What is the eye color of the person you are searching for", ['brown', 'black', 'blue', 'hazel', 'green', ])
 			traits = removeTrait(traitChoices, 'eyecolor')
 			results = people.filter((person) => person.eyeColor === trait)
 			results = searchByTraits(results, traits)
@@ -106,7 +105,7 @@ function removeTrait(traits, value) {
 		traits.splice(index, 1);
 	}
 	return traits;
-}
+  }
 
 function searchById(people) {
 	const idToSearchForString = prompt('Please enter the id of the person you are searching for.');
@@ -143,8 +142,9 @@ function mainMenu(person, people) {
 			break;
 		case 'family':
 			//! TODO
-			//let personFamily = findPersonFamily(person, people);
-			//displayPeople('Family', personFamily, true);
+			let personFamily = findPersonFamily(person, people);
+			if(personFamily.length == 0) alert(`${person.firstName} ${person.lastName} has no immediate family`);
+			else displayPeople('Family', personFamily, true);
 			break;
 		case 'descendants':
 			//! TODO
