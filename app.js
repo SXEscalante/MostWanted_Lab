@@ -124,7 +124,8 @@ function mainMenu(person, people) {
 		case 'family':
 			//! TODO
 			let personFamily = findPersonFamily(person, people);
-			displayPeople('Family', personFamily);
+			if(personFamily.length == 0) alert(`${person.firstName} ${person.lastName} has no immediate family`);
+			else displayPeople('Family', personFamily);
 			break;
 		case 'descendants':
 			//! TODO
@@ -144,35 +145,44 @@ function findPersonFamily(person, people){
 	let family = [];
 	parents = relativesSearch(person.parents, people);
 	for(parent of parents){
+		parent.relation = "Parent"
 		family.push(parent)
 	}
 	let spouseId = [person.currentSpouse]
-	let siblings = relativesSearch(spouseId, people)
-	for(sibling of siblings){
-		family.push(sibling)
+	let spouse = relativesSearch(spouseId, people)
+	for(partner of spouse){
+		partner.relation = "Spouse"
+		family.push(partner)
 	}
 	let siblingsIds = findSiblings(person, people);
 	siblings = relativesSearch(siblingsIds, people);
 	for(sibling of siblings){
+		sibling.relation = "Sibling"
 		family.push(sibling)
 	}
 	return family;
 }
 
 function relativesSearch(relatives, people){
-	let relativesProfiles = people.filter((relative) => relatives.includes(relative.id));
-	return relativesProfiles;
+		let relativesProfiles = people.filter((relative) => relatives.includes(relative.id));
+		return relativesProfiles;
 }
 
 function findSiblings(person, people){
-	let parentsIds = person.parents;
-	let siblings = people.filter(function(sibling){
-		if(person.parents === sibling.parents){
-			return true;
-		}
-	});
-	let siblingsIds = siblings.map((sibling) => sibling.id);
-	return siblingsIds;
+	let parentsIds = JSON.stringify(person.parents);
+	if(parentsIds != "[]"){
+		let siblings = people.filter(function(sibling){
+			if(parentsIds == JSON.stringify(sibling.parents) && person.id != sibling.id){
+				return true;
+			}
+		});
+		let siblingsIds = siblings.map((sibling) => sibling.id);
+		return siblingsIds;
+	}
+	else{
+		return [];
+	}
+	
 }
 
 function getFullNames(people){
@@ -197,10 +207,23 @@ function displayPersonInfo(person, people){
 function displayPeople(displayTitle, peopleToDisplay) {
 	const formatedPeopleDisplayText = peopleToDisplay
 		.map(function(person){
-			if(person != null || undefined){
+			if((person != null || undefined) && person.relation){
+				return `${person.relation}: ${person.firstName} ${person.lastName}`
+			}
+			else if(person != null || undefined){
 				return `${person.firstName} ${person.lastName}`
 			}
-			
+		})
+		.join('\n');
+	alert(`${displayTitle}\n\n${formatedPeopleDisplayText}`);
+}
+
+function displayRelatedPeople(displayTitle, peopleToDisplay, relation) {
+	const formatedPeopleDisplayText = peopleToDisplay
+		.map(function(person){
+			if((person != null || undefined)){
+				return `${relation}: ${person.firstName} ${person.lastName}`
+			}
 		})
 		.join('\n');
 	alert(`${displayTitle}\n\n${formatedPeopleDisplayText}`);
