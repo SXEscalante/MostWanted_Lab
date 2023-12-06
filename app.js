@@ -40,7 +40,8 @@ function searchPeopleDataSet(people) {
 			break;
 		case 'trait':
 			//! TODO
-			//results = searchByTraits(people, traitChoices);
+			let traitChoices = ['gender', 'dob', 'height', 'weight', 'eyecolor', 'occupation', 'search']
+			results = searchByTraits(people, traitChoices);
 			break;
 		default:
 			return searchPeopleDataSet(people);
@@ -49,9 +50,50 @@ function searchPeopleDataSet(people) {
 	return results;
 }
 
+function searchByTraits(people, traitChoices){
+	const searchTraitChoice = validatedPrompt(
+		`Please enter the trait you would like to search for\nThere are currently ${people.length} results`, 
+		traitChoices
+	);
+	let traits;
 
-
-
+	switch (searchTraitChoice) {
+		case 'gender':
+			trait = prompt("What gender is the person you are searching for")
+			traits = removeTrait(traitChoices, 'gender')
+			results = searchByTraits(results, traits)
+			break;
+		case 'dob':
+			trait = prompt("What is the Date of Birth of the person you are searching for")
+			traits = removeTrait(traitChoices, 'dob')
+			results = people.filter((person) => person.dob == trait)
+			results = searchByTraits(results, traits)
+			break;
+		case 'height':
+			trait = prompt("What height is the person you are searching for")
+			results = people.filter((person) => person.height == trait)
+			results = searchByTraits(results, traits)
+			break;
+		case 'weight':
+			trait = prompt("What weight is the person you are searching for")
+			results = people.filter((person) => person.weight == trait)
+			results = searchByTraits(results, traits)
+			break;
+		case 'eyecolor':
+			trait = prompt("What is the eye color of the person you are searching for")
+			results = people.filter((person) => person.eyeColor === trait)
+			results = searchByTraits(results, traits)
+			break;
+		case 'occupation':
+			trait = prompt("What occupation is the person you are searching for")
+			results = people.filter((person) => person.occupation === trait)
+			results = searchByTraits(results, traits)
+			break;
+		case 'search':
+			break;
+	}
+	return results;
+}
 
 function searchById(people) {
 	const idToSearchForString = prompt('Please enter the id of the person you are searching for.');
@@ -88,14 +130,14 @@ function mainMenu(person, people) {
 			break;
 		case 'family':
 			//! TODO
-			let personFamily = findPersonFamily(person, people);
-			if(personFamily.length == 0) alert(`${person.firstName} ${person.lastName} has no immediate family`);
-			else displayPeople('Family', personFamily, true);
+			//let personFamily = findPersonFamily(person, people);
+			//displayPeople('Family', personFamily, true);
 			break;
 		case 'descendants':
 			//! TODO
-			//let personDescendants = findPersonDescendants(person, people);
-			//else displayPeople('Descendants', personDescendants, true);
+			let personDescendants = findPersonDescendants(person, people, 0);
+			if(personDescendants.length == 0) alert(`${person.firstName} ${person.lastName} has no descendants`)
+			else displayPeople('Descendants', personDescendants, true);
 			break;
 		case 'quit':
 			return;
@@ -128,7 +170,45 @@ function findPersonFamily(person, people){
 	return family;
 }
 
+function findPersonDescendants(person, people, generation){
+	let descendants = people.filter((descendant) => descendant.parents.includes(person.id));
+	if(generation == 0) {
+		for(descendant of descendants){
+			descendant.relation = "Child";
+		}
+		generation++;
+	}
+	else if(generation == 1){
+		for(descendant of descendants){
+			descendant.relation = "Grandchild";
+		}
+		generation++;
+	}
+	else{
+		
+		for(descendant of descendants){
+			descendants.relation += "Great";
+			for(let i = 0; i < generation - 2; i++){
+				descendants.relation += " great";
+			}
+			descendants.relation += "grandchild";
+		}
+		generation++;
+	}
 
+	if (descendants.length != 0){
+		let descendantsDescendants;
+		for(descendant of descendants){
+			descendantsDescendants = findPersonDescendants(descendant, people, generation);
+		}
+		if(descendantsDescendants.length != 0){
+			for(descendant of descendantsDescendants){
+				descendants.push(descendant);
+			}
+		}
+	}
+	return descendants;
+}
 
 function relativesSearch(relatives, people){
 		let relativesProfiles = people.filter((relative) => relatives.includes(relative.id));
