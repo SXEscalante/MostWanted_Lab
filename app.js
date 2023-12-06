@@ -15,7 +15,7 @@ function runSearchAndMenu(people) {
 	const searchResults = searchPeopleDataSet(people);
 
 	if (searchResults.length > 1) {
-		displayPeople('Search Results', searchResults);
+		displayPeople('Search Results', searchResults, false);
 	} else if (searchResults.length === 1) {
 		const person = searchResults[0];
 		mainMenu(person, people);
@@ -40,7 +40,7 @@ function searchPeopleDataSet(people) {
 			break;
 		case 'trait':
 			//! TODO
-			results = searchByTraits(people);
+			//results = searchByTraits(people, traitChoices);
 			break;
 		default:
 			return searchPeopleDataSet(people);
@@ -49,44 +49,9 @@ function searchPeopleDataSet(people) {
 	return results;
 }
 
-function searchByTraits(people){
-	const searchTraitChoice = validatedPrompt(
-		"Please enter the trait you would like to search for", 
-		['gender', 'dob', 'height', 'weight', 'eyecolor', 'occupation']
-	);
-	
-	let results = [];
-	let trait;
-	switch (searchTraitChoice) {
-		case 'gender':
-			trait = prompt("What gender is the person you are searching for")
-			results = people.filter((person) => person.gender === trait)
-			break;
-		case 'dob':
-			trait = prompt("What is the Date of Birth of the person you are searching for")
-			results = people.filter((person) => person.dob === trait)
-			break;
-		case 'height':
-			trait = prompt("What height is the person you are searching for")
-			results = people.filter((person) => person.height === trait)
-			break;
-		case 'weight':
-			trait = prompt("What weight is the person you are searching for")
-			results = people.filter((person) => person.weight === trait)
-			break;
-		case 'eyecolor':
-			trait = prompt("What is the eye color of the person you are searching for")
-			results = people.filter((person) => person.eyeColor === trait)
-			break;
-		case 'occupation':
-			trait = prompt("What occupation is the person you are searching for")
-			results = people.filter((person) => person.occupation === trait)
-			break;
-		case 'search':
-			break;
-	}
-	return results;
-}
+
+
+
 
 function searchById(people) {
 	const idToSearchForString = prompt('Please enter the id of the person you are searching for.');
@@ -129,8 +94,8 @@ function mainMenu(person, people) {
 			break;
 		case 'descendants':
 			//! TODO
-			// let personDescendants = findPersonDescendants(person, people);
-			// displayPeople('Descendants', personDescendants);
+			//let personDescendants = findPersonDescendants(person, people);
+			//else displayPeople('Descendants', personDescendants);
 			break;
 		case 'quit':
 			return;
@@ -145,23 +110,22 @@ function findPersonFamily(person, people){
 	let family = [];
 	parents = relativesSearch(person.parents, people);
 	for(parent of parents){
-		parent.relation = "Parent"
 		family.push(parent)
 	}
 	let spouseId = [person.currentSpouse]
 	let spouse = relativesSearch(spouseId, people)
 	for(partner of spouse){
-		partner.relation = "Spouse"
 		family.push(partner)
 	}
 	let siblingsIds = findSiblings(person, people);
 	siblings = relativesSearch(siblingsIds, people);
 	for(sibling of siblings){
-		sibling.relation = "Sibling"
 		family.push(sibling)
 	}
 	return family;
 }
+
+
 
 function relativesSearch(relatives, people){
 		let relativesProfiles = people.filter((relative) => relatives.includes(relative.id));
@@ -207,10 +171,7 @@ function displayPersonInfo(person, people){
 function displayPeople(displayTitle, peopleToDisplay) {
 	const formatedPeopleDisplayText = peopleToDisplay
 		.map(function(person){
-			if((person != null || undefined) && person.relation){
-				return `${person.relation}: ${person.firstName} ${person.lastName}`
-			}
-			else if(person != null || undefined){
+			if(person != null || undefined){
 				return `${person.firstName} ${person.lastName}`
 			}
 		})
