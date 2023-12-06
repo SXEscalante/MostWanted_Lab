@@ -61,6 +61,7 @@ function searchByTraits(people, traitChoices){
 		case 'gender':
 			trait = prompt("What gender is the person you are searching for")
 			traits = removeTrait(traitChoices, 'gender')
+			results = people.filter((person) => person.gender === trait)
 			results = searchByTraits(results, traits)
 			break;
 		case 'dob':
@@ -71,21 +72,25 @@ function searchByTraits(people, traitChoices){
 			break;
 		case 'height':
 			trait = prompt("What height is the person you are searching for")
+			traits = removeTrait(traitChoices, 'height')
 			results = people.filter((person) => person.height == trait)
 			results = searchByTraits(results, traits)
 			break;
 		case 'weight':
 			trait = prompt("What weight is the person you are searching for")
+			traits = removeTrait(traitChoices, 'weight')
 			results = people.filter((person) => person.weight == trait)
 			results = searchByTraits(results, traits)
 			break;
 		case 'eyecolor':
 			trait = prompt("What is the eye color of the person you are searching for")
+			traits = removeTrait(traitChoices, 'eyecolor')
 			results = people.filter((person) => person.eyeColor === trait)
 			results = searchByTraits(results, traits)
 			break;
 		case 'occupation':
 			trait = prompt("What occupation is the person you are searching for")
+			traits = removeTrait(traitChoices, 'occupation')
 			results = people.filter((person) => person.occupation === trait)
 			results = searchByTraits(results, traits)
 			break;
@@ -93,6 +98,14 @@ function searchByTraits(people, traitChoices){
 			break;
 	}
 	return results;
+}
+
+function removeTrait(traits, value) {
+	var index = traits.indexOf(value);
+	if (index > -1) {
+		traits.splice(index, 1);
+	}
+	return traits;
 }
 
 function searchById(people) {
